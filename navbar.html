@@ -1,0 +1,27 @@
+<nav class="bg-white shadow">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" id="nav-home" class="text-xl font-bold text-blue-700">Home</a>
+      <div class="hidden md:flex space-x-6">
+        <a href="combine_combo.html" id="nav-combine" class="text-gray-600 hover:text-blue-700">Combine Combo</a>
+        <a href="split_combo.html" id="nav-split" class="text-gray-600 hover:text-blue-700">Split Combo</a>
+        <a href="get_combo_from_username.html" id="nav-getcombo" class="text-gray-600 hover:text-blue-700">Get Combo From Username</a>
+      </div>
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button id="menu-btn" aria-label="Toggle menu" class="focus:outline-none">
+          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+               viewBox="0 0 24 24">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+    <a href="combine_combo.html" id="nav-combine-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700">Combine Combo</a>
+    <a href="split_combo.html" id="nav-split-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700">Split Combo</a>
+    <a href="get_combo_from_username.html" id="nav-getcombo-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700">Get Combo From Username</a>
+  </div>
+</nav>

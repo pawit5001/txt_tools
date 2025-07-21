@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Split Combo - TextServ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container mx-auto px-6 py-10 flex-grow">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
+
+      <div>
+        <label for="combo-input" class="block text-gray-800 text-lg font-semibold mb-3">Enter User:Pass:Cookie</label>
+        <textarea
+          id="combo-input"
+          rows="7"
+          placeholder="Enter user:pass:cookie, one per line"
+          class="w-full rounded-lg border border-gray-300 p-4 text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 resize-y font-mono text-base"
+        ></textarea>
+      </div>
+
+      <div class="flex flex-wrap gap-5">
+        <button onclick="splitComboData()"
+          class="px-7 py-3 bg-blue-700 text-white rounded-xl font-semibold shadow hover:bg-blue-800 transition">
+          Split
+        </button>
+        <button onclick="clearText()"
+          class="px-7 py-3 bg-gray-300 text-gray-700 rounded-xl font-semibold shadow hover:bg-gray-400 transition">
+          Clear
+        </button>
+        <button onclick="copyToClipboard('user-pass')"
+          class="px-7 py-3 bg-green-700 text-white rounded-xl font-semibold shadow hover:bg-green-800 transition">
+          Copy User:Pass
+        </button>
+        <button onclick="copyToClipboard('cookie')"
+          class="px-7 py-3 bg-green-700 text-white rounded-xl font-semibold shadow hover:bg-green-800 transition">
+          Copy Cookie
+        </button>
+      </div>
+
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-900 mb-4">Output</h3>
+        
+        <label for="output-user-pass" class="block text-gray-800 font-semibold mb-2 text-lg">User:Pass</label>
+        <pre id="output-user-pass" class="border border-gray-300 rounded-lg p-5 min-h-[140px] whitespace-pre-wrap bg-gray-50 text-gray-900 overflow-auto font-mono text-base"></pre>
+
+        <label for="output-cookie" class="block text-gray-800 font-semibold mt-8 mb-2 text-lg">Cookie</label>
+        <pre id="output-cookie" class="border border-gray-300 rounded-lg p-5 min-h-[140px] whitespace-pre-wrap bg-gray-50 text-gray-900 overflow-auto font-mono text-base"></pre>
+
+        <h6 id="count-label" class="mt-4 text-gray-600 font-semibold text-md">Total: 0 accounts</h6>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="components.js"></script>
+  <script src="split_combo.js"></script>
+</body>
+</html>
