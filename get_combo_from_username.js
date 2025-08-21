@@ -26,12 +26,12 @@ fileInput.addEventListener('change', (e) => {
 
   function checkAllProcessed() {
     if (filesProcessed === files.length) {
-      userPassInput.value = (userPassInput.value.trim() ? userPassInput.value.trim() + '\n' : '') + allText.trim();
+      userPassInput.value = allText.trim();
     }
   }
 });
 
-// รองรับ drag & drop ไฟล์เข้า textarea ด้วย
+// รองรับ drag & drop ไฟล์เข้า textarea
 userPassInput.addEventListener('dragover', (e) => {
   e.preventDefault();
   userPassInput.classList.add('ring', 'ring-blue-400');
@@ -67,28 +67,43 @@ userPassInput.addEventListener('drop', (e) => {
 
   function checkAllProcessed() {
     if (filesProcessed === files.length) {
-      userPassInput.value = (userPassInput.value.trim() ? userPassInput.value.trim() + '\n' : '') + allText.trim();
+      userPassInput.value = allText.trim();
     }
   }
 });
 
-// auto new line เวลาวางหลาย username ในช่อง Username
+// --- Fix: Paste แล้วแทนค่าของเก่า ---
 cookieInput.addEventListener('paste', (e) => {
   e.preventDefault();
   const pasteText = (e.clipboardData || window.clipboardData).getData('text');
   const lines = pasteText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
 
-  const currentLines = cookieInput.value.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-  const newLines = [...currentLines, ...lines];
-
-  cookieInput.value = newLines.join('\n');
+  // ใช้เฉพาะข้อมูลใหม่ ไม่รวมของเก่า
+  cookieInput.value = lines.join('\n');
 });
 
-// ฟังก์ชันตรวจสอบ format combo แต่ละบรรทัด
+// ฟังก์ชัน parse combo (username:password:cookie)
+function parseCombo(line) {
+  const parts = line.split(':');
+  if (parts.length < 3) {
+    throw new Error("Invalid combo format, must be username:password:cookie");
+  }
+  const username = parts[0].trim();
+  const password = parts[1].trim();
+  const cookie = parts.slice(2).join(':').trim(); // รวมที่เหลือเป็น cookie
+  return { username, password, cookie };
+}
+
+// ฟังก์ชันตรวจสอบ format combo
 function validateComboFormat(lines) {
   const invalidLines = [];
   lines.forEach((line, i) => {
-    if (!/^[^:]+:[^:]+:.+$/.test(line)) {
+    try {
+      const { username, password, cookie } = parseCombo(line);
+      if (!username || !password || !cookie) {
+        invalidLines.push(i + 1);
+      }
+    } catch (e) {
       invalidLines.push(i + 1);
     }
   });
@@ -101,7 +116,7 @@ function processCombo() {
   const usernameLinesRaw = cookieInput.value.trim();
 
   if (!comboLinesRaw) {
-    alert('Please enter User:Pass:Cookie data.');
+    alert('Please enter combo data.');
     return;
   }
   if (!usernameLinesRaw) {
@@ -110,21 +125,16 @@ function processCombo() {
   }
 
   const comboLines = comboLinesRaw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-  const usernameLines = usernameLinesRaw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
 
-  // Validate format combo
+  // Username อาจมีหลาย format → ดึงเฉพาะส่วนแรกก่อน ":" มาใช้เทียบ
+  const usernameLines = usernameLinesRaw.split(/\r?\n/)
+    .map(l => l.trim().split(':')[0].toLowerCase())
+    .filter(l => l.length > 0);
+
+  // Validate combo format
   const invalids = validateComboFormat(comboLines);
   if (invalids.length > 0) {
-    alert(`Invalid format at line(s): ${invalids.join(', ')}. Each line must be user:pass:cookie`);
-    return;
-  }
-
-  if (usernameLines.some(u => u.length < 3)) {
-    alert('Usernames must have at least 3 characters each.');
-    return;
-  }
-  if (usernameLines.length > comboLines.length) {
-    alert('Number of usernames must not be greater than number of combo lines.');
+    alert(`Invalid format at line(s): ${invalids.join(', ')}. Each combo must be username:password:cookie`);
     return;
   }
 
@@ -132,8 +142,8 @@ function processCombo() {
   const remainingCombo = [];
 
   comboLines.forEach(combo => {
-    const username = combo.split(':')[0];
-    if (usernameLines.includes(username)) {
+    const { username } = parseCombo(combo);
+    if (usernameLines.includes(username.toLowerCase())) {
       selectedCombo.push(combo);
     } else {
       remainingCombo.push(combo);
@@ -146,6 +156,7 @@ function processCombo() {
   document.getElementById('count-label-remaining').innerText = `Total Remaining: ${remainingCombo.length} accounts`;
 }
 
+// ฟังก์ชัน clear
 function clearText() {
   userPassInput.value = '';
   cookieInput.value = '';
@@ -155,6 +166,7 @@ function clearText() {
   document.getElementById('count-label-remaining').innerText = 'Total Remaining: 0 accounts';
 }
 
+// copy to clipboard
 function copyToClipboard(target) {
   let textToCopy = '';
   if (target === 'selected') {

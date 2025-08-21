@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get Combo by Number - TextServ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main content -->
+  <main class="flex-grow max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 w-full">
+
+    <label for="combo-input" class="block mb-3 font-semibold text-gray-800 text-lg">
+      Enter Combos (user:pass:cookie)
+    </label>
+    <textarea
+      id="combo-input"
+      rows="8"
+      placeholder="Enter user:pass:cookie, one per line"
+      title="Enter one combo per line"
+      class="w-full border border-gray-300 rounded-lg p-4 font-mono resize-y focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+    ></textarea>
+
+    <div class="mt-6 flex items-center gap-4">
+      <label for="combo-count" class="font-semibold text-gray-800">Number to Extract:</label>
+      <input
+        id="combo-count"
+        type="number"
+        min="1"
+        placeholder="e.g., 20"
+        title="Number of combos to extract"
+        class="w-32 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      />
+      <button
+        class="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-blue-800 transition"
+        onclick="getComboByNumber()"
+      >
+        Get Combo
+      </button>
+      <button
+        class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-gray-500 transition"
+        onclick="clearText()"
+      >
+        Clear
+      </button>
+    </div>
+
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-3 text-xl">Extracted Combo</h3>
+        <pre
+          id="output-extracted"
+          class="whitespace-pre-wrap bg-gray-100 p-4 rounded-lg h-64 overflow-auto font-mono border border-gray-300 text-base"
+        ></pre>
+        <p id="count-label-extracted" class="mt-2 text-gray-600 font-semibold text-md">Total Extracted: 0 accounts</p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-3 text-xl">Remaining Combo</h3>
+        <pre
+          id="output-remaining"
+          class="whitespace-pre-wrap bg-gray-100 p-4 rounded-lg h-64 overflow-auto font-mono border border-gray-300 text-base"
+        ></pre>
+        <p id="count-label-remaining" class="mt-2 text-gray-600 font-semibold text-md">Total Remaining: 0 accounts</p>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-4">
+      <button
+        class="bg-green-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-green-800 transition"
+        onclick="copyToClipboard('extracted')"
+      >
+        Copy Extracted
+      </button>
+      <button
+        class="bg-green-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-green-800 transition"
+        onclick="copyToClipboard('remaining')"
+      >
+        Copy Remaining
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="components.js"></script>
+  <script src="get_combo_by_number.js"></script>
+</body>
+</html>
