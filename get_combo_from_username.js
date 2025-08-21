@@ -72,15 +72,9 @@ userPassInput.addEventListener('drop', (e) => {
   }
 });
 
-// --- Fix: Paste แล้วแทนค่าของเก่า ---
-cookieInput.addEventListener('paste', (e) => {
-  e.preventDefault();
-  const pasteText = (e.clipboardData || window.clipboardData).getData('text');
-  const lines = pasteText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-
-  // ใช้เฉพาะข้อมูลใหม่ ไม่รวมของเก่า
-  cookieInput.value = lines.join('\n');
-});
+// -----------
+// เอา paste handler ออกเลย เพื่อใช้ behavior ปกติของ browser
+// -----------
 
 // ฟังก์ชัน parse combo (username:password:cookie)
 function parseCombo(line) {
