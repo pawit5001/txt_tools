@@ -20,7 +20,10 @@
     <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
 
       <div>
-        <label for="combo-input" class="block text-gray-800 text-lg font-semibold mb-3">Enter User:Pass:Cookie</label>
+        <div class="flex justify-between items-center mb-3">
+          <label for="combo-input" class="text-gray-800 text-lg font-semibold">Enter User:Pass:Cookie</label>
+          <span id="input-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+        </div>
         <textarea
           id="combo-input"
           rows="7"

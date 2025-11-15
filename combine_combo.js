@@ -1,3 +1,27 @@
+// ฟังก์ชันนับจำนวน lines ที่ไม่ว่าง
+function countLines(text) {
+  if (!text.trim()) return 0;
+  return text.trim().split(/\r?\n/).filter(line => line.trim().length > 0).length;
+}
+
+// อัพเดทจำนวน accounts แบบ real-time
+function updateInputCounts() {
+  const userPassInput = document.getElementById('user-pass-input').value;
+  const cookieInput = document.getElementById('cookie-input').value;
+  const userPassCount = countLines(userPassInput);
+  const cookieCount = countLines(cookieInput);
+  document.getElementById('userpass-count').innerText = `${userPassCount} accounts`;
+  document.getElementById('cookie-count').innerText = `${cookieCount} accounts`;
+}
+
+// ฟังการเปลี่ยนแปลงใน textarea
+document.addEventListener('DOMContentLoaded', function() {
+  const userPassInput = document.getElementById('user-pass-input');
+  const cookieInput = document.getElementById('cookie-input');
+  userPassInput.addEventListener('input', updateInputCounts);
+  cookieInput.addEventListener('input', updateInputCounts);
+});
+
 function combineUserPassCookie() {
     const userPassInput = document.getElementById('user-pass-input').value.trim();
     const cookieInput = document.getElementById('cookie-input').value.trim();
@@ -43,6 +67,7 @@ function clearText() {
     document.getElementById('cookie-input').value = '';
     document.getElementById('output-text').textContent = '';
     document.getElementById('count-label').textContent = 'Total: 0 usernames';
+    updateInputCounts();
 }
 
 function copyToClipboard() {

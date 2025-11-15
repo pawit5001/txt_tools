@@ -2,6 +2,24 @@ const userPassInput = document.getElementById('user-pass-input');
 const fileInput = document.getElementById('file-input');
 const cookieInput = document.getElementById('cookie-input');
 
+// ฟังก์ชันนับจำนวน lines ที่ไม่ว่าง
+function countLines(text) {
+  if (!text.trim()) return 0;
+  return text.trim().split(/\r?\n/).filter(line => line.trim().length > 0).length;
+}
+
+// อัพเดทจำนวน accounts แบบ real-time
+function updateCounts() {
+  const comboCount = countLines(userPassInput.value);
+  const usernameCount = countLines(cookieInput.value);
+  document.getElementById('combo-count').innerText = `${comboCount} accounts`;
+  document.getElementById('username-count').innerText = `${usernameCount} accounts`;
+}
+
+// ฟังการเปลี่ยนแปลงใน textarea
+userPassInput.addEventListener('input', updateCounts);
+cookieInput.addEventListener('input', updateCounts);
+
 // โหลดไฟล์ .txt หลายไฟล์ เข้า textarea user-pass-input
 fileInput.addEventListener('change', (e) => {
   const files = e.target.files;
@@ -26,7 +44,14 @@ fileInput.addEventListener('change', (e) => {
 
   function checkAllProcessed() {
     if (filesProcessed === files.length) {
-      userPassInput.value = allText.trim();
+      // ถ้ามีข้อมูลเดิมอยู่แล้ว ให้ต่อท้าย (append) แทนการทับ
+      const existingText = userPassInput.value.trim();
+      if (existingText) {
+        userPassInput.value = existingText + '\n' + allText.trim();
+      } else {
+        userPassInput.value = allText.trim();
+      }
+      updateCounts();
     }
   }
 });
@@ -67,7 +92,14 @@ userPassInput.addEventListener('drop', (e) => {
 
   function checkAllProcessed() {
     if (filesProcessed === files.length) {
-      userPassInput.value = allText.trim();
+      // ถ้ามีข้อมูลเดิมอยู่แล้ว ให้ต่อท้าย (append) แทนการทับ
+      const existingText = userPassInput.value.trim();
+      if (existingText) {
+        userPassInput.value = existingText + '\n' + allText.trim();
+      } else {
+        userPassInput.value = allText.trim();
+      }
+      updateCounts();
     }
   }
 });
@@ -76,16 +108,38 @@ userPassInput.addEventListener('drop', (e) => {
 // เอา paste handler ออกเลย เพื่อใช้ behavior ปกติของ browser
 // -----------
 
-// ฟังก์ชัน parse combo (username:password:cookie)
+// ฟังก์ชัน parse combo
+// Old format: username:password:cookie (3 ส่วนแรก, cookie อาจมี : ข้างใน)
+// New format: username:password:cookie:mail:passmail:refresh_token:client_id (หรือมากกว่า)
 function parseCombo(line) {
   const parts = line.split(':');
   if (parts.length < 3) {
-    throw new Error("Invalid combo format, must be username:password:cookie");
+    throw new Error("Invalid combo format, must be at least username:password:cookie");
   }
+  
   const username = parts[0].trim();
   const password = parts[1].trim();
-  const cookie = parts.slice(2).join(':').trim(); // รวมที่เหลือเป็น cookie
-  return { username, password, cookie };
+  
+  // หาตำแหน่งของ mail (ส่วนที่มี @ ซึ่งมักจะเป็นฟิลด์ที่ 4)
+  let mailIndex = -1;
+  for (let i = 2; i < parts.length; i++) {
+    if (parts[i].includes('@')) {
+      mailIndex = i;
+      break;
+    }
+  }
+  
+  // cookie คือทุกอย่างจากส่วนที่ 3 จนถึงก่อน mail (ถ้ามี)
+  let cookie;
+  if (mailIndex > 2) {
+    // มี mail → cookie จากส่วนที่ 2 ถึงก่อน mail
+    cookie = parts.slice(2, mailIndex).join(':').trim();
+  } else {
+    // ไม่มี mail → cookie จากส่วนที่ 2 จนจบ
+    cookie = parts.slice(2).join(':').trim();
+  }
+  
+  return { username, password, cookie, fullLine: line };
 }
 
 // ฟังก์ชันตรวจสอบ format combo
@@ -93,8 +147,8 @@ function validateComboFormat(lines) {
   const invalidLines = [];
   lines.forEach((line, i) => {
     try {
-      const { username, password, cookie } = parseCombo(line);
-      if (!username || !password || !cookie) {
+      const parsed = parseCombo(line);
+      if (!parsed.username || !parsed.password || !parsed.cookie) {
         invalidLines.push(i + 1);
       }
     } catch (e) {
@@ -128,19 +182,29 @@ function processCombo() {
   // Validate combo format
   const invalids = validateComboFormat(comboLines);
   if (invalids.length > 0) {
-    alert(`Invalid format at line(s): ${invalids.join(', ')}. Each combo must be username:password:cookie`);
+    alert(`Invalid format at line(s): ${invalids.join(', ')}. Each combo must be at least username:password:cookie`);
     return;
   }
 
+  // ตรวจสอบว่าเลือก output format แบบไหน
+  const outputFormat = document.querySelector('input[name="output-format"]:checked')?.value || 'old';
+  
   const selectedCombo = [];
   const remainingCombo = [];
 
   comboLines.forEach(combo => {
-    const { username } = parseCombo(combo);
+    const { username, password, cookie, fullLine } = parseCombo(combo);
+    
+    // Old format: แสดงเฉพาะ user:pass:cookie (3 ส่วนแรก)
+    // New format: แสดงทุกอย่างครบตาม input
+    const outputLine = outputFormat === 'old' 
+      ? `${username}:${password}:${cookie}` 
+      : fullLine;
+    
     if (usernameLines.includes(username.toLowerCase())) {
-      selectedCombo.push(combo);
+      selectedCombo.push(outputLine);
     } else {
-      remainingCombo.push(combo);
+      remainingCombo.push(outputLine);
     }
   });
 
@@ -158,6 +222,7 @@ function clearText() {
   document.getElementById('output-remaining-combo').innerText = '';
   document.getElementById('count-label-selected').innerText = 'Total Selected: 0 accounts';
   document.getElementById('count-label-remaining').innerText = 'Total Remaining: 0 accounts';
+  updateCounts();
 }
 
 // copy to clipboard

@@ -20,7 +20,10 @@
     <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
 
       <div>
-        <label for="user-pass-input" class="block text-gray-800 text-lg font-semibold mb-3">Enter User:Pass</label>
+        <div class="flex justify-between items-center mb-3">
+          <label for="user-pass-input" class="text-gray-800 text-lg font-semibold">Enter User:Pass</label>
+          <span id="userpass-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+        </div>
         <textarea
           id="user-pass-input"
           rows="6"
@@ -30,7 +33,10 @@
       </div>
 
       <div>
-        <label for="cookie-input" class="block text-gray-800 text-lg font-semibold mb-3">Enter Cookie</label>
+        <div class="flex justify-between items-center mb-3">
+          <label for="cookie-input" class="text-gray-800 text-lg font-semibold">Enter Cookie</label>
+          <span id="cookie-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+        </div>
         <textarea
           id="cookie-input"
           rows="6"

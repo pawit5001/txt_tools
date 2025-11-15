@@ -18,7 +18,10 @@
 
   <main class="flex-grow max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 w-full">
 
-    <label for="user-pass-input" class="block mb-3 font-semibold text-gray-800 text-lg">Enter User:Pass:Cookie</label>
+    <div class="flex justify-between items-center mb-3">
+      <label for="user-pass-input" class="font-semibold text-gray-800 text-lg">Enter User:Pass:Cookie</label>
+      <span id="combo-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+    </div>
     <textarea
       id="user-pass-input"
       rows="7"
@@ -36,13 +39,30 @@
     />
     <p class="text-sm text-gray-500 mt-1">You can drag & drop or select .txt files (1 ID per line)</p>
 
-    <label for="cookie-input" class="block mt-7 mb-3 font-semibold text-gray-800 text-lg">Enter Username</label>
+    <div class="flex justify-between items-center mt-7 mb-3">
+      <label for="cookie-input" class="font-semibold text-gray-800 text-lg">Enter Username</label>
+      <span id="username-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+    </div>
     <textarea
       id="cookie-input"
       rows="6"
       placeholder="Enter username, one per line"
       class="w-full border border-gray-300 rounded-lg p-4 font-mono resize-y focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
     ></textarea>
+
+    <div class="mt-6 mb-4">
+      <label class="block mb-2 font-semibold text-gray-800 text-lg">Output Format</label>
+      <div class="flex gap-6">
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="output-format" value="old" class="mr-2 w-4 h-4" checked />
+          <span class="text-gray-700">Old Format (user:pass:cookie)</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="output-format" value="new" class="mr-2 w-4 h-4" />
+          <span class="text-gray-700">New Format (Full data)</span>
+        </label>
+      </div>
+    </div>
 
     <div class="mt-6 flex flex-wrap gap-4">
       <button

@@ -1,3 +1,22 @@
+// ฟังก์ชันนับจำนวน lines ที่ไม่ว่าง
+function countLines(text) {
+  if (!text.trim()) return 0;
+  return text.trim().split(/\r?\n/).filter(line => line.trim().length > 0).length;
+}
+
+// อัพเดทจำนวน accounts แบบ real-time
+function updateInputCount() {
+  const comboInput = document.getElementById('combo-input').value;
+  const count = countLines(comboInput);
+  document.getElementById('input-count').innerText = `${count} accounts`;
+}
+
+// ฟังการเปลี่ยนแปลงใน textarea
+document.addEventListener('DOMContentLoaded', function() {
+  const comboInput = document.getElementById('combo-input');
+  comboInput.addEventListener('input', updateInputCount);
+});
+
 function getComboByNumber() {
     const comboInput = document.getElementById('combo-input').value.trim();
     const count = parseInt(document.getElementById('combo-count').value.trim());
@@ -67,4 +86,5 @@ function clearText() {
     document.getElementById('output-remaining').textContent = '';
     document.getElementById('count-label-extracted').textContent = 'Total Extracted: 0 accounts';
     document.getElementById('count-label-remaining').textContent = 'Total Remaining: 0 accounts';
+    updateInputCount();
 }

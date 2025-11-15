@@ -19,9 +19,12 @@
   <!-- Main content -->
   <main class="flex-grow max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 w-full">
 
-    <label for="combo-input" class="block mb-3 font-semibold text-gray-800 text-lg">
-      Enter Combos (user:pass:cookie)
-    </label>
+    <div class="flex justify-between items-center mb-3">
+      <label for="combo-input" class="font-semibold text-gray-800 text-lg">
+        Enter Combos (user:pass:cookie)
+      </label>
+      <span id="input-count" class="text-sm text-gray-600 font-semibold">0 accounts</span>
+    </div>
     <textarea
       id="combo-input"
       rows="8"
