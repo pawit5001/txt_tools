@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Combine Recovery - TextServ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="flex-grow max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 w-full">
+
+    <div class="flex justify-between items-center mb-3">
+      <label for="file1-input" class="font-semibold text-gray-800 text-lg">Enter Combos (user:pass:cookie)</label>
+      <span id="file1-count" class="text-sm text-gray-600 font-semibold">0 lines</span>
+    </div>
+    <textarea
+      id="file1-input"
+      rows="7"
+      placeholder="Enter first data (combo, username, etc.), one per line"
+      class="w-full border border-gray-300 rounded-lg p-4 font-mono resize-y focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+    ></textarea>
+
+    <input
+      type="file"
+      id="file1-upload"
+      multiple
+      accept=".txt"
+      class="mt-3 block rounded-md border border-gray-300 p-1"
+      title="Select one or more .txt files"
+    />
+    <p class="text-sm text-gray-500 mt-1">You can drag & drop or select .txt files</p>
+
+    <div class="flex justify-between items-center mt-7 mb-3">
+      <label for="file2-input" class="font-semibold text-gray-800 text-lg">Enter Email (email:password:refreshToken:clientId)</label>
+      <span id="file2-count" class="text-sm text-gray-600 font-semibold">0 lines</span>
+    </div>
+    <textarea
+      id="file2-input"
+      rows="6"
+      placeholder="Enter second data (cookies, tokens, etc.), one per line"
+      class="w-full border border-gray-300 rounded-lg p-4 font-mono resize-y focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+    ></textarea>
+
+    <input
+      type="file"
+      id="file2-upload"
+      multiple
+      accept=".txt"
+      class="mt-3 block rounded-md border border-gray-300 p-1"
+      title="Select one or more .txt files"
+    />
+    <p class="text-sm text-gray-500 mt-1">You can drag & drop or select .txt files</p>
+
+    <div class="mt-6 flex flex-wrap gap-4">
+      <button
+        class="bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-blue-800 transition"
+        onclick="combineRecovery()"
+      >
+        Combine
+      </button>
+      <button
+        class="bg-gray-400 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-gray-500 transition"
+        onclick="clearText()"
+      >
+        Clear
+      </button>
+      <button
+        class="bg-green-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-green-800 transition"
+        onclick="copyToClipboard()"
+      >
+        Copy
+      </button>
+      <button
+        class="bg-purple-700 text-white px-5 py-3 rounded-xl font-semibold shadow hover:bg-purple-800 transition"
+        onclick="downloadOutput()"
+      >
+        Download
+      </button>
+    </div>
+
+    <div class="mt-10">
+      <h3 class="font-semibold text-gray-900 mb-3 text-xl">Output</h3>
+      <pre
+        id="output-text"
+        class="whitespace-pre-wrap bg-gray-100 p-4 rounded-lg h-64 overflow-auto font-mono border border-gray-300 text-base"
+      ></pre>
+      <h6 id="count-label" class="mt-4 text-gray-600 font-semibold text-md">Total: 0 combined lines</h6>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="components.js"></script>
+  <script src="combine_recovery.js"></script>
+</body>
+</html>

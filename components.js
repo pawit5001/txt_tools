@@ -8,6 +8,7 @@ function loadNavbar() {
       <a href="index.html" id="nav-home" class="text-xl font-bold text-blue-700 hover:text-blue-800">Home</a>
       <div class="hidden md:flex space-x-6">
         <a href="combine_combo.html" id="nav-combine" class="text-gray-600 hover:text-blue-700 font-normal">Combine Combo</a>
+        <a href="combine_recovery.html" id="nav-recovery" class="text-gray-600 hover:text-blue-700 font-normal">Combine Recovery</a>
         <a href="split_combo.html" id="nav-split" class="text-gray-600 hover:text-blue-700 font-normal">Split Combo</a>
         <a href="get_combo_from_username.html" id="nav-getcombo" class="text-gray-600 hover:text-blue-700 font-normal">Get Combo From Username</a>
         <a href="get_combo_by_number.html" id="nav-getcomboby" class="text-gray-600 hover:text-blue-700 font-normal">Get Combo By Number</a>
@@ -21,6 +22,7 @@ function loadNavbar() {
     </div>
     <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
       <a href="combine_combo.html" id="nav-combine-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700 font-normal">Combine Combo</a>
+      <a href="combine_recovery.html" id="nav-recovery-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700 font-normal">Combine Recovery</a>
       <a href="split_combo.html" id="nav-split-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700 font-normal">Split Combo</a>
       <a href="get_combo_from_username.html" id="nav-getcombo-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700 font-normal">Get Combo From Username</a>
       <a href="get_combo_by_number.html" id="nav-getcomboby-mobile" class="block px-4 py-2 text-gray-600 hover:text-blue-700 font-normal">Get Combo By Number</a>
@@ -64,6 +66,7 @@ function setActiveNav() {
 
   const pageMap = {
     'index.html': ['nav-home', 'nav-home-mobile'],
+    'combine_recovery.html': ['nav-recovery', 'nav-recovery-mobile'],
     'combine_combo.html': ['nav-combine', 'nav-combine-mobile'],
     'split_combo.html': ['nav-split', 'nav-split-mobile'],
     'get_combo_from_username.html': ['nav-getcombo', 'nav-getcombo-mobile'],

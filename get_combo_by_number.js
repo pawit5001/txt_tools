@@ -4,17 +4,108 @@ function countLines(text) {
   return text.trim().split(/\r?\n/).filter(line => line.trim().length > 0).length;
 }
 
+const comboInput = document.getElementById('combo-input');
+const comboFileUpload = document.getElementById('combo-file-upload');
+
 // อัพเดทจำนวน accounts แบบ real-time
 function updateInputCount() {
-  const comboInput = document.getElementById('combo-input').value;
-  const count = countLines(comboInput);
+  const count = countLines(comboInput.value);
   document.getElementById('input-count').innerText = `${count} accounts`;
 }
 
-// ฟังการเปลี่ยนแปลงใน textarea
+// โหลดไฟล์ .txt หลายไฟล์
+function setupFileUpload() {
+  comboFileUpload.addEventListener('change', (e) => {
+    const files = e.target.files;
+    let allText = '';
+    let filesProcessed = 0;
+
+    Array.from(files).forEach(file => {
+      if (file.type !== 'text/plain') {
+        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        filesProcessed++;
+        checkAllProcessed();
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        allText += evt.target.result.trim() + '\n';
+        filesProcessed++;
+        checkAllProcessed();
+      };
+      reader.readAsText(file);
+    });
+
+    function checkAllProcessed() {
+      if (filesProcessed === files.length) {
+        const existingText = comboInput.value.trim();
+        if (existingText) {
+          comboInput.value = existingText + '\n' + allText.trim();
+        } else {
+          comboInput.value = allText.trim();
+        }
+        updateInputCount();
+      }
+    }
+  });
+}
+
+// รองรับ drag & drop
+function setupDragDrop() {
+  comboInput.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    comboInput.classList.add('ring', 'ring-blue-400');
+  });
+  
+  comboInput.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    comboInput.classList.remove('ring', 'ring-blue-400');
+  });
+  
+  comboInput.addEventListener('drop', (e) => {
+    e.preventDefault();
+    comboInput.classList.remove('ring', 'ring-blue-400');
+    const files = e.dataTransfer.files;
+    if (files.length === 0) return;
+
+    let allText = '';
+    let filesProcessed = 0;
+
+    Array.from(files).forEach(file => {
+      if (file.type !== 'text/plain') {
+        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        filesProcessed++;
+        checkAllProcessed();
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        allText += evt.target.result.trim() + '\n';
+        filesProcessed++;
+        checkAllProcessed();
+      };
+      reader.readAsText(file);
+    });
+
+    function checkAllProcessed() {
+      if (filesProcessed === files.length) {
+        const existingText = comboInput.value.trim();
+        if (existingText) {
+          comboInput.value = existingText + '\n' + allText.trim();
+        } else {
+          comboInput.value = allText.trim();
+        }
+        updateInputCount();
+      }
+    }
+  });
+}
+
+// ตั้งค่า event listeners เมื่อ DOM พร้อม
 document.addEventListener('DOMContentLoaded', function() {
-  const comboInput = document.getElementById('combo-input');
   comboInput.addEventListener('input', updateInputCount);
+  setupFileUpload();
+  setupDragDrop();
 });
 
 function getComboByNumber() {
@@ -86,5 +177,6 @@ function clearText() {
     document.getElementById('output-remaining').textContent = '';
     document.getElementById('count-label-extracted').textContent = 'Total Extracted: 0 accounts';
     document.getElementById('count-label-remaining').textContent = 'Total Remaining: 0 accounts';
+    document.getElementById('combo-file-upload').value = '';
     updateInputCount();
 }
