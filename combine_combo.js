@@ -30,7 +30,11 @@ function combineUserPassCookie() {
     output.innerHTML = ''; // Clear output
 
     if (!userPassInput || !cookieInput) {
-        alert('Please fill in both User:Pass and Cookie fields.');
+        showModal({
+            type: 'warning',
+            title: 'Input Required',
+            message: 'Please fill in both User:Pass and Cookie fields.'
+        });
         return;
     }
 
@@ -40,7 +44,11 @@ function combineUserPassCookie() {
 
     // Validate line counts
     if (userPassLines.length !== cookieLines.length) {
-        alert('The number of lines in User:Pass and Cookie must be equal.');
+        showModal({
+            type: 'error',
+            title: 'Line Count Mismatch',
+            message: 'The number of lines in User:Pass and Cookie must be equal.'
+        });
         return;
     }
 
@@ -51,7 +59,11 @@ function combineUserPassCookie() {
 
         // Validate User:Pass format
         if (!/^[^:]+:[^:]+$/.test(userPass)) {
-            alert(`Invalid format in User:Pass at line ${i + 1}: "${userPass}"`);
+            showModal({
+                type: 'error',
+                title: 'Invalid Format',
+                message: `Invalid format in User:Pass at line ${i + 1}: "${userPass}"`
+            });
             return;
         }
 
@@ -63,20 +75,50 @@ function combineUserPassCookie() {
     countLabel.textContent = `Total: ${validLines} accounts`;}
 
 function clearText() {
-    document.getElementById('user-pass-input').value = '';
-    document.getElementById('cookie-input').value = '';
-    document.getElementById('output-text').textContent = '';
-    document.getElementById('count-label').textContent = 'Total: 0 usernames';
-    updateInputCounts();
+    const hasUserPass = document.getElementById('user-pass-input').value.trim().length > 0;
+    const hasCookie = document.getElementById('cookie-input').value.trim().length > 0;
+    const hasOutput = document.getElementById('output-text').textContent.trim().length > 0;
+    
+    if (!hasUserPass && !hasCookie && !hasOutput) {
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'Nothing to clear. Please add some data first.'
+        });
+        return;
+    }
+    
+    showModal({
+        type: 'confirm',
+        title: 'Confirm Clear',
+        message: 'Are you sure you want to clear all data?',
+        confirmText: 'Clear All',
+        cancelText: 'Cancel',
+        onConfirm: () => {
+            document.getElementById('user-pass-input').value = '';
+            document.getElementById('cookie-input').value = '';
+            document.getElementById('output-text').textContent = '';
+            document.getElementById('count-label').textContent = 'Total: 0 usernames';
+            updateInputCounts();
+        }
+    });
 }
 
 function copyToClipboard() {
     const output = document.getElementById('output-text').innerText;
     if (!output) {
-        alert('No data to copy!');
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'No data to copy!'
+        });
         return;
     }
     navigator.clipboard.writeText(output).then(() => {
-        alert('Combo copied to clipboard!');
+        showModal({
+            type: 'success',
+            title: 'Copied!',
+            message: 'Combo copied to clipboard!'
+        });
     });
 }

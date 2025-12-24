@@ -22,7 +22,11 @@ function setupFileUpload() {
 
     Array.from(files).forEach(file => {
       if (file.type !== 'text/plain') {
-        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        showModal({
+          type: 'warning',
+          title: 'Invalid File Type',
+          message: `File "${file.name}" is not a txt file and will be ignored.`
+        });
         filesProcessed++;
         checkAllProcessed();
         return;
@@ -73,7 +77,11 @@ function setupDragDrop() {
 
     Array.from(files).forEach(file => {
       if (file.type !== 'text/plain') {
-        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        showModal({
+          type: 'warning',
+          title: 'Invalid File Type',
+          message: `File "${file.name}" is not a txt file and will be ignored.`
+        });
         filesProcessed++;
         checkAllProcessed();
         return;
@@ -120,12 +128,20 @@ function getComboByNumber() {
     outputRemaining.textContent = '';
 
     if (!comboInput) {
-        alert('Please enter combos (user:pass:cookie).');
+        showModal({
+            type: 'warning',
+            title: 'Input Required',
+            message: 'Please enter combos (user:pass:cookie).'
+        });
         return;
     }
 
     if (isNaN(count) || count <= 0) {
-        alert('Please enter a valid number.');
+        showModal({
+            type: 'warning',
+            title: 'Invalid Number',
+            message: 'Please enter a valid number.'
+        });
         return;
     }
 
@@ -134,7 +150,11 @@ function getComboByNumber() {
     const total = comboLines.length;
 
     if (count > total) {
-        alert(`Number entered (${count}) exceeds total combos (${total}).`);
+        showModal({
+            type: 'error',
+            title: 'Number Too Large',
+            message: `Number entered (${count}) exceeds total combos (${total}).`
+        });
         return;
     }
 
@@ -158,25 +178,60 @@ function copyToClipboard(target) {
     }
 
     if (!content.trim()) {
-        alert('No data to copy!');
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'No data to copy!'
+        });
         return;
     }
 
     navigator.clipboard.writeText(content).then(() => {
-        alert('Copied to clipboard!');
+        showModal({
+            type: 'success',
+            title: 'Copied!',
+            message: 'Copied to clipboard!'
+        });
     }).catch(err => {
-        alert('Error copying to clipboard!');
+        showModal({
+            type: 'error',
+            title: 'Copy Failed',
+            message: 'Error copying to clipboard!'
+        });
         console.error('Error copying text: ', err);
     });
 }
 
 function clearText() {
-    document.getElementById('combo-input').value = '';
-    document.getElementById('combo-count').value = '';
-    document.getElementById('output-extracted').textContent = '';
-    document.getElementById('output-remaining').textContent = '';
-    document.getElementById('count-label-extracted').textContent = 'Total Extracted: 0 accounts';
-    document.getElementById('count-label-remaining').textContent = 'Total Remaining: 0 accounts';
-    document.getElementById('combo-file-upload').value = '';
-    updateInputCount();
+    const hasCombo = document.getElementById('combo-input').value.trim().length > 0;
+    const hasCount = document.getElementById('combo-count').value.trim().length > 0;
+    const hasOutput = document.getElementById('output-extracted').textContent.trim().length > 0 ||
+                      document.getElementById('output-remaining').textContent.trim().length > 0;
+    
+    if (!hasCombo && !hasCount && !hasOutput) {
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'Nothing to clear. Please add some data first.'
+        });
+        return;
+    }
+    
+    showModal({
+        type: 'confirm',
+        title: 'Confirm Clear',
+        message: 'Are you sure you want to clear all data?',
+        confirmText: 'Clear All',
+        cancelText: 'Cancel',
+        onConfirm: () => {
+            document.getElementById('combo-input').value = '';
+            document.getElementById('combo-count').value = '';
+            document.getElementById('output-extracted').textContent = '';
+            document.getElementById('output-remaining').textContent = '';
+            document.getElementById('count-label-extracted').textContent = 'Total Extracted: 0 accounts';
+            document.getElementById('count-label-remaining').textContent = 'Total Remaining: 0 accounts';
+            document.getElementById('combo-file-upload').value = '';
+            updateInputCount();
+        }
+    });
 }

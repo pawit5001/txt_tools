@@ -29,7 +29,11 @@ function splitComboData() {
     countLabel.textContent = 'Total: 0 accounts';
 
     if (!comboInput) {
-        alert('Please fill in the User:Pass:Cookie field.');
+        showModal({
+            type: 'warning',
+            title: 'Input Required',
+            message: 'Please fill in the User:Pass:Cookie field.'
+        });
         return;
     }
 
@@ -61,7 +65,11 @@ function splitComboData() {
     });
 
     if (errorLines.length > 0) {
-        alert(`Invalid format at line(s): ${errorLines.join(', ')}`);
+        showModal({
+            type: 'error',
+            title: 'Invalid Format',
+            message: `Invalid format at line(s): ${errorLines.join(', ')}`
+        });
     }
 
     outputUserPass.textContent = userPassLines.join('\n');
@@ -70,11 +78,33 @@ function splitComboData() {
 }
 
 function clearText() {
-    document.getElementById('combo-input').value = '';
-    document.getElementById('output-user-pass').textContent = '';
-    document.getElementById('output-cookie').textContent = '';
-    document.getElementById('count-label').textContent = 'Total: 0 accounts';
-    updateInputCount();
+    const comboInput = document.getElementById('combo-input').value.trim();
+    const hasOutput = document.getElementById('output-user-pass').textContent.trim().length > 0 ||
+                      document.getElementById('output-cookie').textContent.trim().length > 0;
+    
+    if (!comboInput && !hasOutput) {
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'Nothing to clear. Please add some data first.'
+        });
+        return;
+    }
+    
+    showModal({
+        type: 'confirm',
+        title: 'Confirm Clear',
+        message: 'Are you sure you want to clear all data?',
+        confirmText: 'Clear All',
+        cancelText: 'Cancel',
+        onConfirm: () => {
+            document.getElementById('combo-input').value = '';
+            document.getElementById('output-user-pass').textContent = '';
+            document.getElementById('output-cookie').textContent = '';
+            document.getElementById('count-label').textContent = 'Total: 0 accounts';
+            updateInputCount();
+        }
+    });
 }
 
 function copyToClipboard(target) {
@@ -87,14 +117,26 @@ function copyToClipboard(target) {
     }
 
     if (content.trim() === '') {
-        alert('No data to copy!');
+        showModal({
+            type: 'info',
+            title: 'No Data',
+            message: 'No data to copy!'
+        });
         return;
     }
 
     navigator.clipboard.writeText(content).then(() => {
-        alert('Copied to clipboard!');
+        showModal({
+            type: 'success',
+            title: 'Copied!',
+            message: 'Copied to clipboard!'
+        });
     }).catch(err => {
-        alert('Error copying to clipboard!');
+        showModal({
+            type: 'error',
+            title: 'Copy Failed',
+            message: 'Error copying to clipboard!'
+        });
         console.error('Error copying text: ', err);
     });
 }

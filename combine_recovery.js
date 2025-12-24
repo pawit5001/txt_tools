@@ -30,7 +30,11 @@ function setupFileUpload(fileInput, textareaId) {
 
     Array.from(files).forEach(file => {
       if (file.type !== 'text/plain') {
-        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        showModal({
+          type: 'warning',
+          title: 'Invalid File Type',
+          message: `File "${file.name}" is not a txt file and will be ignored.`
+        });
         filesProcessed++;
         checkAllProcessed();
         return;
@@ -84,7 +88,11 @@ function setupDragDrop(textareaId, fileInputId) {
 
     Array.from(files).forEach(file => {
       if (file.type !== 'text/plain') {
-        alert(`File "${file.name}" is not a txt file and will be ignored.`);
+        showModal({
+          type: 'warning',
+          title: 'Invalid File Type',
+          message: `File "${file.name}" is not a txt file and will be ignored.`
+        });
         filesProcessed++;
         checkAllProcessed();
         return;
@@ -129,7 +137,11 @@ function combineRecovery() {
   output.innerHTML = ''; // Clear output
 
   if (!file1Input || !file2Input) {
-    alert('Please fill in both fields.');
+    showModal({
+      type: 'warning',
+      title: 'Input Required',
+      message: 'Please fill in both fields.'
+    });
     return;
   }
 
@@ -140,7 +152,11 @@ function combineRecovery() {
 
   // Validate line counts
   if (file1Lines.length !== file2Lines.length) {
-    alert(`Line count mismatch!\nFirst data: ${file1Lines.length} lines\nSecond data: ${file2Lines.length} lines`);
+    showModal({
+      type: 'error',
+      title: 'Line Count Mismatch',
+      message: `Line count mismatch!\nFirst data: ${file1Lines.length} lines\nSecond data: ${file2Lines.length} lines`
+    });
     return;
   }
 
@@ -159,7 +175,11 @@ function combineRecovery() {
   }
 
   if (validLines === 0) {
-    alert('No valid lines to combine!');
+    showModal({
+      type: 'warning',
+      title: 'No Data',
+      message: 'No valid lines to combine!'
+    });
     return;
   }
 
@@ -169,24 +189,54 @@ function combineRecovery() {
 
 // ฟังก์ชันล้างข้อมูล
 function clearText() {
-  document.getElementById('file1-input').value = '';
-  document.getElementById('file2-input').value = '';
-  document.getElementById('output-text').textContent = '';
-  document.getElementById('count-label').textContent = 'Total: 0 combined lines';
-  document.getElementById('file1-upload').value = '';
-  document.getElementById('file2-upload').value = '';
-  updateInputCounts();
+  const hasFile1 = document.getElementById('file1-input').value.trim().length > 0;
+  const hasFile2 = document.getElementById('file2-input').value.trim().length > 0;
+  const hasOutput = document.getElementById('output-text').textContent.trim().length > 0;
+  
+  if (!hasFile1 && !hasFile2 && !hasOutput) {
+    showModal({
+      type: 'info',
+      title: 'No Data',
+      message: 'Nothing to clear. Please add some data first.'
+    });
+    return;
+  }
+  
+  showModal({
+    type: 'confirm',
+    title: 'Confirm Clear',
+    message: 'Are you sure you want to clear all data?',
+    confirmText: 'Clear All',
+    cancelText: 'Cancel',
+    onConfirm: () => {
+      document.getElementById('file1-input').value = '';
+      document.getElementById('file2-input').value = '';
+      document.getElementById('output-text').textContent = '';
+      document.getElementById('count-label').textContent = 'Total: 0 combined lines';
+      document.getElementById('file1-upload').value = '';
+      document.getElementById('file2-upload').value = '';
+      updateInputCounts();
+    }
+  });
 }
 
 // ฟังก์ชันคัดลอกไปยังคลิปบอร์ด
 function copyToClipboard() {
   const output = document.getElementById('output-text').innerText;
   if (!output) {
-    alert('No data to copy!');
+    showModal({
+      type: 'info',
+      title: 'No Data',
+      message: 'No data to copy!'
+    });
     return;
   }
   navigator.clipboard.writeText(output).then(() => {
-    alert('Combined data copied to clipboard!');
+    showModal({
+      type: 'success',
+      title: 'Copied!',
+      message: 'Combined data copied to clipboard!'
+    });
   });
 }
 
@@ -194,7 +244,11 @@ function copyToClipboard() {
 function downloadOutput() {
   const output = document.getElementById('output-text').innerText;
   if (!output) {
-    alert('No data to download!');
+    showModal({
+      type: 'info',
+      title: 'No Data',
+      message: 'No data to download!'
+    });
     return;
   }
 

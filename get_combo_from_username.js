@@ -28,7 +28,11 @@ fileInput.addEventListener('change', (e) => {
 
   Array.from(files).forEach(file => {
     if (file.type !== 'text/plain') {
-      alert(`File "${file.name}" is not a txt file and will be ignored.`);
+      showModal({
+        type: 'warning',
+        title: 'Invalid File Type',
+        message: `File "${file.name}" is not a txt file and will be ignored.`
+      });
       filesProcessed++;
       checkAllProcessed();
       return;
@@ -76,7 +80,11 @@ userPassInput.addEventListener('drop', (e) => {
 
   Array.from(files).forEach(file => {
     if (file.type !== 'text/plain') {
-      alert(`File "${file.name}" is not a txt file and will be ignored.`);
+      showModal({
+        type: 'warning',
+        title: 'Invalid File Type',
+        message: `File "${file.name}" is not a txt file and will be ignored.`
+      });
       filesProcessed++;
       checkAllProcessed();
       return;
@@ -164,11 +172,19 @@ function processCombo() {
   const usernameLinesRaw = cookieInput.value.trim();
 
   if (!comboLinesRaw) {
-    alert('Please enter combo data.');
+    showModal({
+      type: 'warning',
+      title: 'Input Required',
+      message: 'Please enter combo data.'
+    });
     return;
   }
   if (!usernameLinesRaw) {
-    alert('Please enter username(s).');
+    showModal({
+      type: 'warning',
+      title: 'Input Required',
+      message: 'Please enter username(s).'
+    });
     return;
   }
 
@@ -182,7 +198,11 @@ function processCombo() {
   // Validate combo format
   const invalids = validateComboFormat(comboLines);
   if (invalids.length > 0) {
-    alert(`Invalid format at line(s): ${invalids.join(', ')}. Each combo must be at least username:password:cookie`);
+    showModal({
+      type: 'error',
+      title: 'Invalid Format',
+      message: `Invalid format at line(s): ${invalids.join(', ')}. Each combo must be at least username:password:cookie`
+    });
     return;
   }
 
@@ -216,13 +236,36 @@ function processCombo() {
 
 // ฟังก์ชัน clear
 function clearText() {
-  userPassInput.value = '';
-  cookieInput.value = '';
-  document.getElementById('output-selected-combo').innerText = '';
-  document.getElementById('output-remaining-combo').innerText = '';
-  document.getElementById('count-label-selected').innerText = 'Total Selected: 0 accounts';
-  document.getElementById('count-label-remaining').innerText = 'Total Remaining: 0 accounts';
-  updateCounts();
+  const hasUserPass = userPassInput.value.trim().length > 0;
+  const hasCookie = cookieInput.value.trim().length > 0;
+  const hasOutput = document.getElementById('output-selected-combo').innerText.trim().length > 0 ||
+                    document.getElementById('output-remaining-combo').innerText.trim().length > 0;
+  
+  if (!hasUserPass && !hasCookie && !hasOutput) {
+    showModal({
+      type: 'info',
+      title: 'No Data',
+      message: 'Nothing to clear. Please add some data first.'
+    });
+    return;
+  }
+  
+  showModal({
+    type: 'confirm',
+    title: 'Confirm Clear',
+    message: 'Are you sure you want to clear all data?',
+    confirmText: 'Clear All',
+    cancelText: 'Cancel',
+    onConfirm: () => {
+      userPassInput.value = '';
+      cookieInput.value = '';
+      document.getElementById('output-selected-combo').innerText = '';
+      document.getElementById('output-remaining-combo').innerText = '';
+      document.getElementById('count-label-selected').innerText = 'Total Selected: 0 accounts';
+      document.getElementById('count-label-remaining').innerText = 'Total Remaining: 0 accounts';
+      updateCounts();
+    }
+  });
 }
 
 // copy to clipboard
@@ -235,14 +278,26 @@ function copyToClipboard(target) {
   }
 
   if (!textToCopy.trim()) {
-    alert('No data to copy!');
+    showModal({
+      type: 'info',
+      title: 'No Data',
+      message: 'No data to copy!'
+    });
     return;
   }
 
   navigator.clipboard.writeText(textToCopy).then(() => {
-    alert(`Copied ${target} combo to clipboard!`);
+    showModal({
+      type: 'success',
+      title: 'Copied!',
+      message: `Copied ${target} combo to clipboard!`
+    });
   }).catch(err => {
-    alert('Failed to copy to clipboard!');
+    showModal({
+      type: 'error',
+      title: 'Copy Failed',
+      message: 'Failed to copy to clipboard!'
+    });
     console.error(err);
   });
 }

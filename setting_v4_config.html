@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Setting V4 Config - TextServ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container mx-auto px-6 mt-32 flex-grow mb-16">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
+
+      <!-- Script Key Input -->
+      <div>
+        <label for="script-key-input" class="text-gray-800 text-lg font-semibold block mb-3">
+          Script Key <span class="text-red-500">*</span> (Required)
+        </label>
+        <input
+          id="script-key-input"
+          type="text"
+          placeholder="Enter script key..."
+          class="w-full rounded-lg border border-gray-300 p-4 text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+        />
+      </div>
+
+      <!-- V4FarmList Input -->
+      <div>
+        <label for="farm-list-input" class="text-gray-800 text-lg font-semibold block mb-3">
+          V4 Farm List <span class="text-red-500">*</span> (Required)
+        </label>
+        <div class="flex gap-3 mb-3">
+          <input
+            id="farm-input"
+            type="text"
+            placeholder="Enter farm username..."
+            class="flex-1 rounded-lg border border-gray-300 p-3 text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+          />
+          <button onclick="addFarmItem()"
+            class="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition">
+            Add
+          </button>
+          <button onclick="deleteAllFarms()"
+            class="px-5 py-3 bg-red-600 text-white rounded-lg font-semibold shadow hover:bg-red-700 transition">
+            Delete All
+          </button>
+        </div>
+        <div id="farm-list" class="space-y-2 mb-4 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
+          <!-- Farm items will be added here -->
+        </div>
+        <span id="farm-count" class="text-sm text-gray-600 font-semibold">0 farms</span>
+      </div>
+
+      <!-- Helper Name List Input -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <label for="helper-list-input" class="text-gray-800 text-lg font-semibold">
+            Helper Name List (Optional)
+          </label>
+          <button onclick="useDefaultHelpers()"
+            class="text-sm px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+            Use Default
+          </button>
+        </div>
+        <div class="flex gap-3 mb-3">
+          <input
+            id="helper-input"
+            type="text"
+            placeholder="Enter helper username..."
+            class="flex-1 rounded-lg border border-gray-300 p-3 text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 text-base"
+          />
+          <button onclick="addHelperItem()"
+            class="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition">
+            Add
+          </button>
+          <button onclick="deleteAllHelpers()"
+            class="px-5 py-3 bg-red-600 text-white rounded-lg font-semibold shadow hover:bg-red-700 transition">
+            Delete All
+          </button>
+        </div>
+        <div id="helper-list" class="space-y-2 mb-4 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
+          <!-- Helper items will be added here -->
+        </div>
+        <span id="helper-count" class="text-sm text-gray-600 font-semibold">0 helpers</span>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-wrap gap-5">
+        <button onclick="generateScript()"
+          class="px-7 py-3 bg-blue-700 text-white rounded-xl font-semibold shadow hover:bg-blue-800 transition">
+          Generate Script
+        </button>
+        <button onclick="copyToClipboard()"
+          class="px-7 py-3 bg-green-700 text-white rounded-xl font-semibold shadow hover:bg-green-800 transition">
+          Copy Script
+        </button>
+        <button onclick="clearAll()"
+          class="px-7 py-3 bg-gray-300 text-gray-700 rounded-xl font-semibold shadow hover:bg-gray-400 transition">
+          Clear
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-900 mb-4">Generated Script</h3>
+        <pre id="output-text" class="border border-gray-300 rounded-lg p-5 min-h-[250px] max-h-[500px] whitespace-pre-wrap bg-gray-50 text-gray-900 overflow-auto font-mono text-sm"></pre>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="components.js"></script>
+  <script src="setting_v4_config.js"></script>
+</body>
+</html>
