@@ -107,18 +107,21 @@ function clearText() {
 function copyToClipboard() {
     const output = document.getElementById('output-text').innerText;
     if (!output) {
-        showModal({
-            type: 'info',
-            title: 'No Data',
-            message: 'No data to copy!'
+        showToast({
+            type: 'warning',
+            message: 'No data to copy.'
         });
         return;
     }
     navigator.clipboard.writeText(output).then(() => {
-        showModal({
+        showToast({
             type: 'success',
-            title: 'Copied!',
-            message: 'Combo copied to clipboard!'
+            message: 'Copied to clipboard.'
+        });
+    }).catch(() => {
+        showToast({
+            type: 'error',
+            message: 'Copy failed. Try again.'
         });
     });
 }

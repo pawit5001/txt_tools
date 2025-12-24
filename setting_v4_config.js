@@ -424,25 +424,22 @@ function copyToClipboard() {
   const output = document.getElementById('output-text').innerText;
   
   if (!output) {
-    showModal({
+    showToast({
       type: 'warning',
-      title: 'No Script',
-      message: 'Please generate a script first'
+      message: 'No script to copy.'
     });
     return;
   }
   
   navigator.clipboard.writeText(output).then(() => {
-    showModal({
+    showToast({
       type: 'success',
-      title: 'Copied!',
-      message: 'Script copied to clipboard!'
+      message: 'Script copied.'
     });
   }).catch(() => {
-    showModal({
+    showToast({
       type: 'error',
-      title: 'Copy Failed',
-      message: 'Failed to copy to clipboard'
+      message: 'Copy failed. Try again.'
     });
   });
 }

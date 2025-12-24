@@ -128,6 +128,56 @@ function hideModal() {
   }
 }
 
+// Toast helpers (non-blocking feedback)
+function ensureToastContainer() {
+  let container = document.getElementById('toast-stack');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-stack';
+    container.className = 'fixed z-[120] flex flex-col gap-3 max-w-sm pointer-events-none';
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function positionToastContainer() {
+  const container = ensureToastContainer();
+  container.style.top = 'auto';
+  container.style.right = '20px';
+  container.style.bottom = '20px';
+  container.style.left = 'auto';
+}
+
+function showToast({ message, type = 'info', duration = 2000 }) {
+  const palette = {
+    success: 'bg-green-600',
+    error: 'bg-red-600',
+    warning: 'bg-amber-500',
+    info: 'bg-blue-600'
+  };
+
+  const container = ensureToastContainer();
+  // Limit concurrent toasts to keep UI tidy
+  const maxToasts = 3;
+  while (container.children.length >= maxToasts) {
+    container.firstChild.remove();
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `${palette[type] || palette.info} bg-opacity-95 text-white shadow-2xl rounded-xl px-4 py-3 pointer-events-auto transition-all duration-200 opacity-0 translate-y-2 backdrop-blur-sm border border-white/10`; // Elevated but light
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.remove('opacity-0', 'translate-y-2');
+  });
+
+  setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(() => toast.remove(), 220);
+  }, duration);
+}
+
 // ฟังก์ชันโหลด navbar เข้าสู่หน้า HTML
 function loadNavbar() {
   const navbarHtml = `
@@ -256,4 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFooter();
   setupMobileMenuToggle();
   setActiveNav();
+  positionToastContainer();
+  window.addEventListener('resize', positionToastContainer);
 });

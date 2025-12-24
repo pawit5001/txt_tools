@@ -117,25 +117,22 @@ function copyToClipboard(target) {
     }
 
     if (content.trim() === '') {
-        showModal({
-            type: 'info',
-            title: 'No Data',
-            message: 'No data to copy!'
+        showToast({
+            type: 'warning',
+            message: 'No data to copy.'
         });
         return;
     }
 
     navigator.clipboard.writeText(content).then(() => {
-        showModal({
+        showToast({
             type: 'success',
-            title: 'Copied!',
-            message: 'Copied to clipboard!'
+            message: target === 'user-pass' ? 'User:Pass copied.' : 'Cookie copied.'
         });
     }).catch(err => {
-        showModal({
+        showToast({
             type: 'error',
-            title: 'Copy Failed',
-            message: 'Error copying to clipboard!'
+            message: 'Copy failed. Try again.'
         });
         console.error('Error copying text: ', err);
     });

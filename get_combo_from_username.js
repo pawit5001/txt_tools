@@ -278,25 +278,22 @@ function copyToClipboard(target) {
   }
 
   if (!textToCopy.trim()) {
-    showModal({
-      type: 'info',
-      title: 'No Data',
-      message: 'No data to copy!'
+    showToast({
+      type: 'warning',
+      message: 'No data to copy.'
     });
     return;
   }
 
   navigator.clipboard.writeText(textToCopy).then(() => {
-    showModal({
+    showToast({
       type: 'success',
-      title: 'Copied!',
-      message: `Copied ${target} combo to clipboard!`
+      message: target === 'selected' ? 'Selected combo copied.' : 'Remaining combo copied.'
     });
   }).catch(err => {
-    showModal({
+    showToast({
       type: 'error',
-      title: 'Copy Failed',
-      message: 'Failed to copy to clipboard!'
+      message: 'Copy failed. Try again.'
     });
     console.error(err);
   });
