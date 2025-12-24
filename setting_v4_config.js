@@ -68,7 +68,7 @@ function isValidRobloxUsername(username) {
   }
   
   // Check for dangerous strings that shouldn't be in usernames
-  const dangerousStrings = ['script_key', '_G.', 'loadstring', 'HttpGet', 'Settings_V4', '=', '{', '}', '[', ']', '(', ')', '"', "'", ':', ';', 'can', 'only', 'Username'];
+  const dangerousStrings = ['script_key', '_G.', 'loadstring', 'HttpGet', 'Settings_V4', '=', '{', '}', '[', ']', '(', ')', '"', "'", ':', ';'];
   for (let dangerous of dangerousStrings) {
     if (cleanUsername.includes(dangerous)) {
       return { 
