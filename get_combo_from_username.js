@@ -209,9 +209,9 @@ function processCombo() {
   // ตรวจสอบว่าเลือก output format แบบไหน
   const outputFormat = document.querySelector('input[name="output-format"]:checked')?.value || 'old';
   
-  const selectedCombo = [];
-  const remainingCombo = [];
-
+  // สร้าง map ของ combo โดยใช้ username เป็น key
+  const comboMap = new Map();
+  
   comboLines.forEach(combo => {
     const { username, password, cookie, fullLine } = parseCombo(combo);
     
@@ -221,10 +221,36 @@ function processCombo() {
       ? `${username}:${password}:${cookie}` 
       : fullLine;
     
-    if (usernameLines.includes(username.toLowerCase())) {
-      selectedCombo.push(outputLine);
-    } else {
-      remainingCombo.push(outputLine);
+    // เก็บ combo ใน map โดยใช้ lowercase username เป็น key
+    // ถ้ามี username ซ้ำ ให้เก็บเป็น array
+    const key = username.toLowerCase();
+    if (!comboMap.has(key)) {
+      comboMap.set(key, []);
+    }
+    comboMap.get(key).push(outputLine);
+  });
+  
+  const selectedCombo = [];
+  const remainingCombo = [];
+  const usedUsernames = new Set();
+
+  // วนลูปตามลำดับของ username ที่ผู้ใช้ใส่
+  usernameLines.forEach(username => {
+    if (comboMap.has(username)) {
+      // เพิ่มทุก combo ที่ตรงกับ username นี้
+      comboMap.get(username).forEach(combo => {
+        selectedCombo.push(combo);
+      });
+      usedUsernames.add(username);
+    }
+  });
+  
+  // เอา combo ที่เหลือทั้งหมด (ที่ไม่ตรงกับ username ที่ระบุ)
+  comboMap.forEach((combos, username) => {
+    if (!usedUsernames.has(username)) {
+      combos.forEach(combo => {
+        remainingCombo.push(combo);
+      });
     }
   });
 
