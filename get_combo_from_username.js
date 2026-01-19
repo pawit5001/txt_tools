@@ -20,6 +20,79 @@ function updateCounts() {
 userPassInput.addEventListener('input', updateCounts);
 cookieInput.addEventListener('input', updateCounts);
 
+// Paste handler: รองรับ paste ไฟล์และโฟลเดอร์ (เฉพาะ .txt/.TXT)
+userPassInput.addEventListener('paste', async (e) => {
+  if (!e.clipboardData || !e.clipboardData.items) return;
+  const items = Array.from(e.clipboardData.items);
+  let allText = '';
+  let filesToRead = [];
+
+  // Helper: ดึงไฟล์จาก DataTransferItem (รองรับโฟลเดอร์ถ้า browser รองรับ)
+  async function getFilesFromItem(item) {
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (file && /\.txt$/i.test(file.name)) {
+        return [file];
+      }
+      // ถ้าเป็น directory (webkitGetAsEntry)
+      if (item.webkitGetAsEntry) {
+        const entry = item.webkitGetAsEntry();
+        if (entry && entry.isDirectory) {
+          return await readAllTxtFilesFromDirectory(entry);
+        }
+      }
+    }
+    return [];
+  }
+
+  // Helper: อ่านไฟล์ .txt ทั้งหมดใน directory (recursive)
+  async function readAllTxtFilesFromDirectory(entry) {
+    let files = [];
+    const reader = entry.createReader();
+    const readEntries = () => new Promise(resolve => reader.readEntries(resolve));
+    let entries = await readEntries();
+    while (entries.length) {
+      for (const ent of entries) {
+        if (ent.isFile && /\.txt$/i.test(ent.name)) {
+          files.push(await new Promise(res => ent.file(res)));
+        } else if (ent.isDirectory) {
+          files = files.concat(await readAllTxtFilesFromDirectory(ent));
+        }
+      }
+      entries = await readEntries();
+    }
+    return files;
+  }
+
+  // ดึงไฟล์จาก clipboard
+  for (const item of items) {
+    const files = await getFilesFromItem(item);
+    filesToRead = filesToRead.concat(files);
+  }
+
+  if (filesToRead.length === 0) return;
+  e.preventDefault();
+  let filesProcessed = 0;
+  filesToRead.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      allText += evt.target.result.trim() + '\n';
+      filesProcessed++;
+      if (filesProcessed === filesToRead.length) {
+        // ถ้ามีข้อมูลเดิมอยู่แล้ว ให้ต่อท้าย (append) แทนการทับ
+        const existingText = userPassInput.value.trim();
+        if (existingText) {
+          userPassInput.value = existingText + '\n' + allText.trim();
+        } else {
+          userPassInput.value = allText.trim();
+        }
+        updateCounts();
+      }
+    };
+    reader.readAsText(file);
+  });
+});
+
 // โหลดไฟล์ .txt หลายไฟล์ เข้า textarea user-pass-input
 fileInput.addEventListener('change', (e) => {
   const files = e.target.files;
@@ -69,47 +142,73 @@ userPassInput.addEventListener('dragleave', (e) => {
   e.preventDefault();
   userPassInput.classList.remove('ring', 'ring-blue-400');
 });
-userPassInput.addEventListener('drop', (e) => {
+userPassInput.addEventListener('drop', async (e) => {
   e.preventDefault();
   userPassInput.classList.remove('ring', 'ring-blue-400');
-  const files = e.dataTransfer.files;
-  if (files.length === 0) return;
+  const items = e.dataTransfer.items;
+  if (!items || items.length === 0) return;
 
   let allText = '';
-  let filesProcessed = 0;
+  let filesToRead = [];
 
-  Array.from(files).forEach(file => {
-    if (file.type !== 'text/plain') {
-      showModal({
-        type: 'warning',
-        title: 'Invalid File Type',
-        message: `File "${file.name}" is not a txt file and will be ignored.`
-      });
-      filesProcessed++;
-      checkAllProcessed();
-      return;
+  async function getFilesFromItem(item) {
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (file && /\.txt$/i.test(file.name)) {
+        return [file];
+      }
+      if (item.webkitGetAsEntry) {
+        const entry = item.webkitGetAsEntry();
+        if (entry && entry.isDirectory) {
+          return await readAllTxtFilesFromDirectory(entry);
+        }
+      }
     }
+    return [];
+  }
+
+  async function readAllTxtFilesFromDirectory(entry) {
+    let files = [];
+    const reader = entry.createReader();
+    const readEntries = () => new Promise(resolve => reader.readEntries(resolve));
+    let entries = await readEntries();
+    while (entries.length) {
+      for (const ent of entries) {
+        if (ent.isFile && /\.txt$/i.test(ent.name)) {
+          files.push(await new Promise(res => ent.file(res)));
+        } else if (ent.isDirectory) {
+          files = files.concat(await readAllTxtFilesFromDirectory(ent));
+        }
+      }
+      entries = await readEntries();
+    }
+    return files;
+  }
+
+  for (const item of items) {
+    const files = await getFilesFromItem(item);
+    filesToRead = filesToRead.concat(files);
+  }
+
+  if (filesToRead.length === 0) return;
+  let filesProcessed = 0;
+  filesToRead.forEach(file => {
     const reader = new FileReader();
     reader.onload = (evt) => {
       allText += evt.target.result.trim() + '\n';
       filesProcessed++;
-      checkAllProcessed();
+      if (filesProcessed === filesToRead.length) {
+        const existingText = userPassInput.value.trim();
+        if (existingText) {
+          userPassInput.value = existingText + '\n' + allText.trim();
+        } else {
+          userPassInput.value = allText.trim();
+        }
+        updateCounts();
+      }
     };
     reader.readAsText(file);
   });
-
-  function checkAllProcessed() {
-    if (filesProcessed === files.length) {
-      // ถ้ามีข้อมูลเดิมอยู่แล้ว ให้ต่อท้าย (append) แทนการทับ
-      const existingText = userPassInput.value.trim();
-      if (existingText) {
-        userPassInput.value = existingText + '\n' + allText.trim();
-      } else {
-        userPassInput.value = allText.trim();
-      }
-      updateCounts();
-    }
-  }
 });
 
 // -----------

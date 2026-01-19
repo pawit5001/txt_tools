@@ -16,10 +16,155 @@ function updateInputCounts() {
 
 // ฟังการเปลี่ยนแปลงใน textarea
 document.addEventListener('DOMContentLoaded', function() {
-  const userPassInput = document.getElementById('user-pass-input');
-  const cookieInput = document.getElementById('cookie-input');
-  userPassInput.addEventListener('input', updateInputCounts);
-  cookieInput.addEventListener('input', updateInputCounts);
+    const userPassInput = document.getElementById('user-pass-input');
+    const cookieInput = document.getElementById('cookie-input');
+    userPassInput.addEventListener('input', updateInputCounts);
+    cookieInput.addEventListener('input', updateInputCounts);
+
+    // Paste handler (userPassInput, cookieInput)
+    [userPassInput, cookieInput].forEach(textarea => {
+        textarea.addEventListener('paste', async (e) => {
+            if (!e.clipboardData || !e.clipboardData.items) return;
+            const items = Array.from(e.clipboardData.items);
+            let allText = '';
+            let filesToRead = [];
+
+            async function getFilesFromItem(item) {
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (file && /\.txt$/i.test(file.name)) {
+                        return [file];
+                    }
+                    if (item.webkitGetAsEntry) {
+                        const entry = item.webkitGetAsEntry();
+                        if (entry && entry.isDirectory) {
+                            return await readAllTxtFilesFromDirectory(entry);
+                        }
+                    }
+                }
+                return [];
+            }
+
+            async function readAllTxtFilesFromDirectory(entry) {
+                let files = [];
+                const reader = entry.createReader();
+                const readEntries = () => new Promise(resolve => reader.readEntries(resolve));
+                let entries = await readEntries();
+                while (entries.length) {
+                    for (const ent of entries) {
+                        if (ent.isFile && /\.txt$/i.test(ent.name)) {
+                            files.push(await new Promise(res => ent.file(res)));
+                        } else if (ent.isDirectory) {
+                            files = files.concat(await readAllTxtFilesFromDirectory(ent));
+                        }
+                    }
+                    entries = await readEntries();
+                }
+                return files;
+            }
+
+            for (const item of items) {
+                const files = await getFilesFromItem(item);
+                filesToRead = filesToRead.concat(files);
+            }
+
+            if (filesToRead.length === 0) return;
+            e.preventDefault();
+            let filesProcessed = 0;
+            filesToRead.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    allText += evt.target.result.trim() + '\n';
+                    filesProcessed++;
+                    if (filesProcessed === filesToRead.length) {
+                        const existingText = textarea.value.trim();
+                        if (existingText) {
+                            textarea.value = existingText + '\n' + allText.trim();
+                        } else {
+                            textarea.value = allText.trim();
+                        }
+                        updateInputCounts();
+                    }
+                };
+                reader.readAsText(file);
+            });
+        });
+    });
+
+    // Drag & drop handler (userPassInput, cookieInput)
+    [userPassInput, cookieInput].forEach(textarea => {
+        textarea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            textarea.classList.add('ring', 'ring-blue-400');
+        });
+        textarea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            textarea.classList.remove('ring', 'ring-blue-400');
+        });
+        textarea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            textarea.classList.remove('ring', 'ring-blue-400');
+            const items = e.dataTransfer.items;
+            if (!items || items.length === 0) return;
+            let allText = '';
+            let filesToRead = [];
+            async function getFilesFromItem(item) {
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (file && /\.txt$/i.test(file.name)) {
+                        return [file];
+                    }
+                    if (item.webkitGetAsEntry) {
+                        const entry = item.webkitGetAsEntry();
+                        if (entry && entry.isDirectory) {
+                            return await readAllTxtFilesFromDirectory(entry);
+                        }
+                    }
+                }
+                return [];
+            }
+            async function readAllTxtFilesFromDirectory(entry) {
+                let files = [];
+                const reader = entry.createReader();
+                const readEntries = () => new Promise(resolve => reader.readEntries(resolve));
+                let entries = await readEntries();
+                while (entries.length) {
+                    for (const ent of entries) {
+                        if (ent.isFile && /\.txt$/i.test(ent.name)) {
+                            files.push(await new Promise(res => ent.file(res)));
+                        } else if (ent.isDirectory) {
+                            files = files.concat(await readAllTxtFilesFromDirectory(ent));
+                        }
+                    }
+                    entries = await readEntries();
+                }
+                return files;
+            }
+            for (const item of items) {
+                const files = await getFilesFromItem(item);
+                filesToRead = filesToRead.concat(files);
+            }
+            if (filesToRead.length === 0) return;
+            let filesProcessed = 0;
+            filesToRead.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    allText += evt.target.result.trim() + '\n';
+                    filesProcessed++;
+                    if (filesProcessed === filesToRead.length) {
+                        const existingText = textarea.value.trim();
+                        if (existingText) {
+                            textarea.value = existingText + '\n' + allText.trim();
+                        } else {
+                            textarea.value = allText.trim();
+                        }
+                        updateInputCounts();
+                    }
+                };
+                reader.readAsText(file);
+            });
+        });
+    });
 });
 
 function combineUserPassCookie() {
