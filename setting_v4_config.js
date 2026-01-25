@@ -13,7 +13,9 @@ const DEFAULT_HELPERS = [
   "hsjbkptt7439",
   "gjmfqdpf8832",
   "nyqhazrj1954",
-  "qwqp74clft50"
+  "qwqp74clft50",
+  "LegacyTurbo4831",
+  "Specter4839"
 ];
 
 // Store lists
