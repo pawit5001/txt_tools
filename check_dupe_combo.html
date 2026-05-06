@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Check Dupe Combo - TextServ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <div id="navbar-placeholder"></div>
+
+  <main class="container mx-auto px-6 flex-grow mt-32 mb-16">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 class="text-3xl font-extrabold text-gray-900">Check Dupe Combo</h1>
+          <p class="mt-2 text-gray-600 max-w-2xl">Keep only the first combo for each value before the first <code class="font-mono text-sm text-blue-700">:</code> and remove the later duplicates automatically.</p>
+        </div>
+        <div class="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3 text-sm text-blue-900">
+          <p class="font-semibold">Rule</p>
+          <p>Use the text before the first <span class="font-mono">:</span> as the duplicate key.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <label for="combo-input" class="text-gray-800 text-lg font-semibold">Enter Combo List</label>
+          <span id="input-count" class="text-sm text-gray-600 font-semibold">0 lines</span>
+        </div>
+        <textarea
+          id="combo-input"
+          rows="10"
+          placeholder="Enter combo data, one per line"
+          class="w-full rounded-lg border border-gray-300 p-4 text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 resize-y font-mono text-base"
+        ></textarea>
+        <input
+          type="file"
+          id="file-input"
+          multiple
+          accept=".txt"
+          class="mt-3 block rounded-md border border-gray-300 p-1"
+          title="Select one or more .txt files"
+        />
+        <p class="text-sm text-gray-500 mt-1">You can drag & drop, select, or paste .txt files into this box.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-5">
+        <button onclick="checkDupeCombo()"
+          class="px-7 py-3 bg-blue-700 text-white rounded-xl font-semibold shadow hover:bg-blue-800 transition">
+          Check Dupe
+        </button>
+        <button onclick="clearText()"
+          class="px-7 py-3 bg-gray-300 text-gray-700 rounded-xl font-semibold shadow hover:bg-gray-400 transition">
+          Clear
+        </button>
+        <button onclick="copyToClipboard()"
+          class="px-7 py-3 bg-green-700 text-white rounded-xl font-semibold shadow hover:bg-green-800 transition">
+          Copy Output
+        </button>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Unique</p>
+          <p id="unique-count" class="mt-2 text-3xl font-extrabold text-gray-900">0</p>
+        </div>
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p class="text-sm font-semibold uppercase tracking-wide text-amber-700">Duplicate Keys</p>
+          <p id="duplicate-key-count" class="mt-2 text-3xl font-extrabold text-amber-800">0</p>
+        </div>
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4">
+          <p class="text-sm font-semibold uppercase tracking-wide text-red-700">Removed Lines</p>
+          <p id="removed-count" class="mt-2 text-3xl font-extrabold text-red-800">0</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between gap-4 mb-4">
+          <h3 class="text-2xl font-semibold text-gray-900">Output</h3>
+          <h6 id="count-label" class="text-gray-600 font-semibold text-md">Total: 0 lines</h6>
+        </div>
+        <pre id="output-text" class="border border-gray-300 rounded-lg p-5 min-h-[180px] max-h-[420px] whitespace-pre-wrap bg-gray-50 text-gray-900 overflow-auto font-mono text-base"></pre>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="components.js"></script>
+  <script src="check_dupe_combo.js"></script>
+</body>
+</html>
